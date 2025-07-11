@@ -2,7 +2,7 @@
 /*
 Plugin Name: WPEX Tetris Migration
 Description: Add the updater to download the new WPEX Tetris fork & migrate old media meta fields to new universal meta keys for the wpex-tetris theme via a dashboard widget.
-Version: 1.1.0
+Version: 1.2.0
 Author: DJABHipHop
 Author URI: https://github.com/WP-Developer-Hub
 Plugin URI: https://github.com/WP-Developer-Hub/wpex-tetris-migration-tool
