@@ -125,6 +125,7 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
                     'url' => $info->url,
                 );
                 error_log('[Updater] Update array set in transient for ' . $theme_slug);
+                update_option('wpex_tetris_last_checked_version', $info->version);
             } else {
                 error_log('[Updater] No update set in transient.');
             }
