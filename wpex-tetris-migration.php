@@ -19,16 +19,9 @@ if (!defined('WPEX_TETRIS_CLASSES_DIR')) {
 class WPEX_Tetris_Migration_Plugin {
 
     public function __construct() {
-        require_once WPEX_TETRIS_CLASSES_DIR . 'wpex-tetris-migration-widget.php';
+        require_once WPEX_TETRIS_CLASSES_DIR . 'wpex-migration-page.php';
 
-        // Get the current theme version
-        $theme     = wp_get_theme();
-        $curr_ver  = $theme->get('Version');
-        // Get the last checked version from the database
-        $last_ver  = get_option('wpex_tetris_last_checked_version');
-
-        // Only require the updater if the versions do not match
-        if ($curr_ver !== $last_ver) {
+        if (!get_option('wpex_migration_updater_complete')) {
             require_once WPEX_TETRIS_CLASSES_DIR . 'wpex-tetris-migration-updater.php';
         }
 
@@ -36,24 +29,51 @@ class WPEX_Tetris_Migration_Plugin {
         add_action('add_meta_boxes', [$this, 'register_old_embed_media_metabox']);
 
         add_action('admin_notices', function() {
-            if ($curr_ver !== $last_ver) {
-                global $pagenow;
-                // Show only on 'update-core.php' (Updates) and 'themes.php' (Appearance > Themes)
-                if (in_array($pagenow, array('update-core.php', 'themes.php'))) {
-                    $plugin_search_url = admin_url('plugin-install.php?s=Download+Plugins+and+Themes+from+Dashboard&tab=search&type=term');
-                    ?>
-                    <div class="notice notice-warning">
-                        <p>
-                            <strong>Before updating:</strong> For your safety, please
-                            <a href="<?php echo esc_url($plugin_search_url); ?>" target="_blank">
-                                install the "Download Plugins and Themes from Dashboard" plugin
-                            </a>
-                            to easily back up your current theme as a ZIP file from your dashboard.
-                        </p>
-                    </div>
-                    <?php
-                }
+            // Only show if the backup is not done
+            if ( get_option('wpex_migration_backup_complete') ) {
+                return;
             }
+
+            global $pagenow;
+            // Only show on Updates and Themes screens
+            if ( ! in_array($pagenow, array('update-core.php', 'themes.php')) ) {
+                return;
+            }
+
+            // Handle the "Mark as Done" button click
+            if (
+                isset($_GET['wpex_mark_backup_done']) &&
+                $_GET['wpex_mark_backup_done'] === '1' &&
+                check_admin_referer('wpex_mark_backup_done')
+            ) {
+                update_option('wpex_migration_backup_complete', 1);
+                // Redirect to remove the GET parameter and prevent resubmission
+                wp_safe_redirect( remove_query_arg(array('wpex_mark_backup_done', '_wpnonce')) );
+                exit;
+            }
+
+            $plugin_search_url = admin_url('plugin-install.php?s=Download+Plugins+and+Themes+from+Dashboard&tab=search&type=term');
+            $mark_done_url = wp_nonce_url(
+                add_query_arg('wpex_mark_backup_done', '1'),
+                'wpex_mark_backup_done'
+            );
+            ?>
+            <div class="notice notice-warning">
+                <p>
+                    <strong>Before updating:</strong> For your safety, please
+                    <a href="<?php echo esc_url($plugin_search_url); ?>" target="_blank">
+                        install the "Download Plugins and Themes from Dashboard" plugin
+                    </a>
+                    to easily back up your current theme as a ZIP file from your dashboard.<br>
+                    <em>Once you have completed your backup, click the button below to mark this step as done and dismiss this message.</em>
+                </p>
+                <p>
+                    <a href="<?php echo esc_url($mark_done_url); ?>" class="button button-primary">
+                        Mark Backup as Done
+                    </a>
+                </p>
+            </div>
+            <?php
         });
     }
 

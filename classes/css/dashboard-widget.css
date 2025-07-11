@@ -1,23 +1,38 @@
-#wpex_tetris_migration_widget .inside {
-  margin: 0;
-  padding: 0;
+.wpex-guide-tabs .nav-tab { display: flex; align-items: center; }
+.wpex-guide-tabs .dashicons { font-size: 18px; margin-right: 6px; }
+.wpex-guide-step { margin-top: 0; }
+.wpex-guide-step h2 .dashicons { vertical-align: middle; margin-right: 6px; }
+.wpex-guide-notice { margin: 16px 0; }
+.wpex-migration-table { margin: 24px 0; }
+.wpex-completed-badge {
+    display: inline-block;
+    background: #46b450;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    margin-left: 10px;
+    vertical-align: middle;
 }
-
-#wpex_tetris_migration_widget .inside #wpex-tetris-remote-readme {
-  overflow: auto;
-  max-height: 300px !important;
+.wpex-disabled, .wpex-tab-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed !important;
 }
+.wpex-migration-checklist { margin: 20px 0 30px 0; }
+.wpex-migration-checklist ul { list-style: none; padding: 0; font-size: 16px; }
+.wpex-migration-checklist li { margin-bottom: 8px; }
 
-#wpex_tetris_migration_widget .inside .wpex-migration-section,
-#wpex_tetris_migration_widget .inside #wpex-tetris-remote-readme {
-  padding: 0px 15px 15px 15px;
+.wpex-check-icon {
+    font-size: 20px;
+    vertical-align: middle;
+    color: #aaa;
+    margin-right: 2px;
 }
-
-#wpex_tetris_migration_widget .inside h1 {
-  margin-bottom: 20px;
-  border-bottom: 1px solid #c3c4c7
+.wpex-check-complete {
+    color: #46b450 !important;
 }
-
-#wpex_tetris_migration_widget .inside .nav-tab-wrapper a {
-  text-decoration: none !important;
+.wpex-check-label {
+    color: #46b450;
+    margin-left: 6px;
 }

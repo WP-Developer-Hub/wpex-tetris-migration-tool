@@ -17,10 +17,11 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
         private $api_endpoint = null;
         private $theme_slug = null;
 
-        public function __construct( $api_url = '', $theme_slug) {
+        public function __construct($api_url = '', $theme_slug) {
             $this->api_endpoint = $api_url;
             $this->theme_slug = $theme_slug;
             add_filter('pre_set_site_transient_update_themes', array($this, 'check_for_update'));
+            add_action('upgrader_process_complete', array($this, 'mark_update_as_complete'), 10, 2);
         }
 
         private function get_local_version() {
@@ -86,7 +87,7 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
             );
         }
 
-        private function is_api_error( $response ) {
+        private function is_api_error($response) {
             $is_error = ($response === false);
             if ($is_error) {
                 error_log('[Updater] API response is error/false.');
@@ -101,7 +102,7 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
                 return false;
             }
             $local_version = $this->get_local_version();
-            if ( version_compare($release_info->version, $local_version, '>')) {
+            if (version_compare($release_info->version, $local_version, '>')) {
                 error_log('[Updater] Update available! Remote: ' . $release_info->version . ' Local: ' . $local_version);
                 return $release_info;
             }
@@ -109,8 +110,13 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
             return false;
         }
 
-        public function check_for_update( $transient ) {
+        public function check_for_update($transient) {
             error_log('[Updater] Running check_for_update...');
+            // Only offer update if migration updater is NOT marked complete
+            if (get_option('wpex_migration_updater_complete')) {
+                error_log('[Updater] Migration updater marked complete, skipping update offer.');
+                return $transient;
+            }
             if (empty($transient->checked)) {
                 error_log('[Updater] No checked themes in transient.');
                 return $transient;
@@ -125,13 +131,29 @@ if (!class_exists('WPEX_Tetris_Migration_Updater')) {
                     'url' => $info->url,
                 );
                 error_log('[Updater] Update array set in transient for ' . $theme_slug);
-                update_option('wpex_tetris_last_checked_version', $info->version);
+                // Do NOT mark updater as complete here; wait until theme is actually updated!
             } else {
                 error_log('[Updater] No update set in transient.');
             }
             return $transient;
         }
+
+        /**
+         * Mark updater as complete after theme update.
+         */
+        public function mark_update_as_complete($upgrader, $hook_extra) {
+            if (
+                isset($hook_extra['action'], $hook_extra['type'], $hook_extra['themes']) &&
+                $hook_extra['action'] === 'update' &&
+                $hook_extra['type'] === 'theme' &&
+                in_array($this->theme_slug, (array) $hook_extra['themes'], true)
+            ) {
+                update_option('wpex_migration_updater_complete', 1);
+                error_log('[Updater] Theme update complete. Migration updater marked as done.');
+            }
+        }
     }
 }
 
+// Instantiate updater
 new WPEX_Tetris_Migration_Updater($api_url, $theme_slug);
