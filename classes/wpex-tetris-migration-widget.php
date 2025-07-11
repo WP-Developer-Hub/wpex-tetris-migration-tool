@@ -47,9 +47,19 @@ class WPEX_Tetris_Migration_Widget {
                 <h1>What This Tool Does:</h1>
                 <ul>
                     <li><b>Download the new WPEX Tetris fork.</b><br>
-                        Ensures you have the latest version of the WPEX Tetris theme with up-to-date features and security fixes.</li>
+                        Ensures you have the latest version of the WPEX Tetris theme with up-to-date features and security fixes.
+                    </li>
                     <li><b>Migrate old media meta fields to the new universal meta keys for the <b>wpex-tetris</b> theme.</b><br>
-                        Scans all your posts, converts old media-related custom fields to the new format, and deletes the old meta keys for a cleaner database.</li>
+                        Scans all your posts, converts old media-related custom fields to the new format, and deletes the old meta keys for a cleaner database.
+                    </li>
+                    <li>
+                        <b>Transfer key theme settings for a seamless update.</b><br>
+                        Automatically moves your old <code>wpex_logo</code> (to <code>custom_logo</code>) and <code>wpex_copyright</code> (to <code>universal_copyright_layout</code>) theme mods, so your logo and copyright info stay intact.
+                    </li>
+                    <li>
+                        <b>Note:</b> <code>wpex_social_*</code> and <code>wpex_header_aside</code> are <b>not</b> migrated.<br>
+                        As stated in the README, these features are now discontinued and will not be available in the new version.
+                    </li>
                     <li>
                         <b>All child themes based on the original <code>wpex-tetris</code> theme (by WPExplorer) may break or lose some functionality.</b><br>
                         Please review and test any customizations or child themes before running the migration, as changes to meta keys could affect inherited or custom features.
@@ -58,6 +68,7 @@ class WPEX_Tetris_Migration_Widget {
                 <em>
                     Use this tool only once. All posts are scanned automatically. Old meta keys are deleted after migration, so the process cannot be undone.
                 </em>
+
                 <h1>Migration Mapping Table:</h1>
                 <!-- Migration Mapping Table -->
                 <table class="wp-list-table widefat fixed striped">
@@ -225,6 +236,19 @@ class WPEX_Tetris_Migration_Widget {
             delete_post_meta($post_id, 'post_url');
 
             $migrated++;
+        }
+
+        // Migrate theme mods
+        $wpex_logo = get_theme_mod('wpex_logo');
+        if ( !empty($wpex_logo) ) {
+            set_theme_mod('custom_logo', $wpex_logo); // Use standard WP custom_logo
+            remove_theme_mod('wpex_logo');
+        }
+
+        $wpex_copyright = get_theme_mod('wpex_copyright');
+        if ( !empty($wpex_copyright) ) {
+            set_theme_mod('universal_copyright_layout', $wpex_copyright);
+            remove_theme_mod('wpex_copyright');
         }
 
         return array(

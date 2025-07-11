@@ -34,6 +34,27 @@ class WPEX_Tetris_Migration_Plugin {
 
         // Properly hook the meta box registration
         add_action('add_meta_boxes', [$this, 'register_old_embed_media_metabox']);
+
+        add_action('admin_notices', function() {
+            if ($curr_ver !== $last_ver) {
+                global $pagenow;
+                // Show only on 'update-core.php' (Updates) and 'themes.php' (Appearance > Themes)
+                if (in_array($pagenow, array('update-core.php', 'themes.php'))) {
+                    $plugin_search_url = admin_url('plugin-install.php?s=Download+Plugins+and+Themes+from+Dashboard&tab=search&type=term');
+                    ?>
+                    <div class="notice notice-warning">
+                        <p>
+                            <strong>Before updating:</strong> For your safety, please
+                            <a href="<?php echo esc_url($plugin_search_url); ?>" target="_blank">
+                                install the "Download Plugins and Themes from Dashboard" plugin
+                            </a>
+                            to easily back up your current theme as a ZIP file from your dashboard.
+                        </p>
+                    </div>
+                    <?php
+                }
+            }
+        });
     }
 
     public function register_old_embed_media_metabox() {
