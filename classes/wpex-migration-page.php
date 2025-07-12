@@ -287,13 +287,26 @@ class WPEX_Migration_Page {
 
         $wpex_logo = get_option('wpex_temp_logo');
         if (!empty($wpex_logo)) {
-            set_theme_mod('custom_logo', $wpex_logo);
+            // Use stock WP function to convert URL to attachment ID if needed
+            if (!is_numeric($wpex_logo)) {
+                $logo_id = attachment_url_to_postid($wpex_logo);
+            } else {
+                $logo_id = (int) $wpex_logo;
+            }
+
+            if ($logo_id) {
+                set_theme_mod('custom_logo', $logo_id);
+                $migrated++;
+            } else {
+                $skipped++;
+            }
+
             remove_theme_mod('wpex_logo');
             delete_option('wpex_temp_logo');
-            $migrated++;
         } else {
             $skipped++;
         }
+
 
         $wpex_copyright = get_theme_mod('wpex_copyright');
         if (!empty($wpex_copyright)) {

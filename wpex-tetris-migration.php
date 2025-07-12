@@ -75,7 +75,7 @@ class WPEX_Tetris_Migration_Plugin {
             </div>
             <?php
         });
-        register_activation_hook(__FILE__, ['WPEX_Tetris_Migration_Plugin', 'store_logo_on_activation']);
+        add_action('init', ['WPEX_Tetris_Migration_Plugin', 'store_logo_on_activation']);
     }
 
     public function register_old_embed_media_metabox() {
