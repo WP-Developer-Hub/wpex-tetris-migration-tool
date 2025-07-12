@@ -285,10 +285,11 @@ class WPEX_Migration_Page {
         $skipped = 0;
         $errors = [];
 
-        $wpex_logo = get_theme_mod('wpex_logo');
+        $wpex_logo = get_option('wpex_temp_logo');
         if (!empty($wpex_logo)) {
             set_theme_mod('custom_logo', $wpex_logo);
             remove_theme_mod('wpex_logo');
+            delete_option('wpex_temp_logo');
             $migrated++;
         } else {
             $skipped++;

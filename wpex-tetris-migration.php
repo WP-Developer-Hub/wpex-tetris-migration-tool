@@ -75,6 +75,7 @@ class WPEX_Tetris_Migration_Plugin {
             </div>
             <?php
         });
+        register_activation_hook(__FILE__, ['WPEX_Tetris_Migration_Plugin', 'store_logo_on_activation']);
     }
 
     public function register_old_embed_media_metabox() {
@@ -93,7 +94,15 @@ class WPEX_Tetris_Migration_Plugin {
         echo '<input type="text" value="' . esc_attr($old_value) . '" class="widefat">';
         echo '<p style="color:#888;font-size:smaller;">This field is for reference only. You can copy the value, but it will not be saved or updated.</p>';
     }
+
+    public static function store_logo_on_activation() {
+        $logo = get_theme_mod('wpex_logo');
+        if ($logo) {
+            add_option('wpex_temp_logo', $logo); // Unique option name!
+        }
+    }
 }
 
 // Initialize the plugin
 new WPEX_Tetris_Migration_Plugin();
+
