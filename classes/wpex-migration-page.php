@@ -220,7 +220,7 @@ class WPEX_Migration_Page {
                                 </tr>
                                 <tr>
                                     <td>Audio</td>
-                                    <td><code>post_audio_mp3</code></td>
+                                    <td><code>wpex_post_audio_mp3</code></td>
                                     <td><span class="dashicons dashicons-arrow-right-alt"></span></td>
                                     <td><code>universal_local_audio_attachment_ids</code></td>
                                     <td><span class="dashicons dashicons-format-audio"></span></td>
@@ -228,7 +228,7 @@ class WPEX_Migration_Page {
                                 </tr>
                                 <tr>
                                     <td>Video / Link / Embed</td>
-                                    <td><code>post_video</code> or <code>post_url</code></td>
+                                    <td><code>wpex_post_video</code> or <code>wpex_post_url</code></td>
                                     <td><span class="dashicons dashicons-arrow-right-alt"></span></td>
                                     <td><code>universal_oembed_url</code></td>
                                     <td>
@@ -245,9 +245,9 @@ class WPEX_Migration_Page {
                         <p>
                             <strong>Keys dropped after migration:</strong>
                             <code>_easy_image_gallery</code>,
-                            <code>post_audio_mp3</code>,
-                            <code>post_video</code>,
-                            <code>post_url</code>
+                            <code>wpex_post_audio_mp3</code>,
+                            <code>wpex_post_video</code>,
+                            <code>wpex_post_url</code>
                         </p>
                     </div>
                     <form method="post" <?php if ($metabox_done) echo 'class="wpex-disabled"'; ?>>
@@ -325,9 +325,9 @@ class WPEX_Migration_Page {
 
         foreach ($post_ids as $post_id) {
             $image_ids  = get_post_meta($post_id, '_easy_image_gallery', true);
-            $audio_urls = get_post_meta($post_id, 'post_audio_mp3', true);
-            $video_urls = get_post_meta($post_id, 'post_video', true);
-            $post_url   = get_post_meta($post_id, 'post_url', true);
+            $audio_urls = get_post_meta($post_id, 'wpex_post_audio_mp3', true);
+            $video_urls = get_post_meta($post_id, 'wpex_post_video', true);
+            $post_url   = get_post_meta($post_id, 'wpex_post_url', true);
 
             if (
                 empty($image_ids) &&
@@ -355,9 +355,9 @@ class WPEX_Migration_Page {
             update_post_meta($post_id, 'universal_oembed_url', esc_url_raw($oembed_url));
 
             delete_post_meta($post_id, '_easy_image_gallery');
-            delete_post_meta($post_id, 'post_audio_mp3');
-            delete_post_meta($post_id, 'post_video');
-            delete_post_meta($post_id, 'post_url');
+            delete_post_meta($post_id, 'wpex_post_audio_mp3');
+            delete_post_meta($post_id, 'wpex_post_video');
+            delete_post_meta($post_id, 'wpex_post_url');
 
             $migrated++;
         }
